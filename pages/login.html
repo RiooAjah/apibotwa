@@ -102,7 +102,7 @@
     <p class="switch-link" onclick="toggleForms()">
       Sudah punya akun? Login di sini
     </p>
-    <a href="/register">profile</a>
+    <a href="/profile">profile</a>
   </div>
 
   <!-- Form Login -->
@@ -119,7 +119,41 @@
   </div>
 
   <script>
+function toggleForms() {
+      const registerForm = document.getElementById('registerForm');
+      const loginForm = document.getElementById('loginForm');
+      if (registerForm.style.display === "none") {
+        registerForm.style.display = "block";
+        loginForm.style.display = "none";
+      } else {
+        registerForm.style.display = "none";
+        loginForm.style.display = "block";
+      }
+    }
 
+    function register() {
+      const username = document.getElementById('registerUsername').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+
+      fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username, email, password
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('registerMessage').textContent = data.message;
+        if (data.success) {
+          document.getElementById('registerForm').style.display = 'none';
+          document.getElementById('loginForm').style.display = 'block';
+        }
+      });
+    }
     function login() {
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
