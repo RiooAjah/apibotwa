@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Profile</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500|Jost:400,500,600&display=swap");
+
+    * {
+      font-family: "Jost", sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="anu">
+    <span>Loading...</span>
+    <button onclick="yayaya()">Refresh Profile</button>
+    <a href="/logout">logout?</a>
+  </div>
+
+  <script>
+    async function yayaya() {
+      try {
+        const response = await fetch('/prof')
+        if (response.ok) {
+          const data = await response.json()
+          const { userProfile, totalUsers } = data
+          
+          document.getElementById('anu').innerHTML = `
+            <span>Username: <span class="glow">${userProfile.username}</span></span><br>
+            <span>Email: <span class="glow">${userProfile.email}</span></span><br>
+            <span>Apikey: <span class="glow">${userProfile.authKey}</span></span><br>
+            <span>Total Users Regis: <span class="glow">${totalUsers}</span></span>`
+        } else {
+          document.getElementById('anu').innerHTML = `
+            <span class="glow">Are You Online, Sensei?</span>`
+        }
+      } catch (e) {
+        document.getElementById('anu').innerHTML = `
+          <span class="glow">Are you online, sensei?</span>`
+      }
+    }
+
+    yayaya()
+  </script>
+</body>
+</html>
