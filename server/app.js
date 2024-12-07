@@ -11,6 +11,7 @@ const path = require("path")
 const bodyParser = require('body-parser')
 const { limit, checkBanned } = require("../declaration/rateLimit.jsx")
 const isAuthenticated = require("../declaration/autentikasi.jsx")
+const allowedApiKeys = require("../../declaration/arrayKey.jsx")
 
 const app = express()
 app.use(checkBanned)
@@ -23,14 +24,45 @@ app.use(session({
     cookie: { maxAge: 3600000 } 
 }))
 
-// function isAuthenticated(req, res, next) {
-//     if (req.session && req.session.email) {
-//         next()
-//     } else {
-//         res.redirect("/login")
-//     }
-// }
-
+async function gptturbo(message) {
+    try {
+        const { data  } = await axios.get(`https://hercai.onrender.com/turbo/hercai?question=${encodeURIComponent(message)}`, {
+            headers: {
+                "content-type": "application/json",
+            },
+        })
+        return data;
+    } catch (e) {
+    console.log(e)
+}
+}
+// Api
+app.get('/api/gptturbo', async (req, res) => {
+  try {
+    const message = req.query.message;
+    const apiKey = req.query.apiKey;
+    if (!message) {
+      return res.status(400).json({ error: 'Parameter "message" tidak ditemukan' });
+    }
+    if (!apiKey) {
+    return res.status(403).json({
+      error: "Input Parameter Apikey!"
+    })
+  } else if (!allowedApiKeys.includes(apiKey)) {
+    return res.status(403).json({
+      error: "apikey not found"
+    })
+  }
+    const response = await gptturbo(message);
+    res.status(200).json({
+      status: 200,      
+      data: { response },
+      creator: "Apibotwa"
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 /* !=== PAGE ===! */
 app.get("/", limit, (req, res) => {
     res.sendFile(path.join(__dirname, "../pages/home.html"))
@@ -61,18 +93,6 @@ app.get("/logout", (req, res) => {
 
 app.get("/prof", isAuthenticated, (req, res) => {
     require("../declaration/profile.jsx")(req, res)
-})
-
-app.get("/blekbok", limit, async (req, res) => {
-    require("../pages/fitures/blackbox.js")(req, res)
-})
-
-app.get("/tiktokDL", limit, async (req, res) => {
-    require("../pages/fitures/tiktok.js")(req, res)
-})
-
-app.get("/instagramDL", limit, async (req, res) => {
-    require("../pages/fitures/instagram.js")(req, res)
 })
 
 app.use((req, res, next) => {
