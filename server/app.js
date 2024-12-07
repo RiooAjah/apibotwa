@@ -43,7 +43,9 @@ app.get("/login", limit, (req, res) => {
 app.get("/profile", limit, isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, "../pages/profile.html"))
 })
-
+app.get("/docs", limit, isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, "../pages/docs.html"))
+})
 /* = ENDPOINT FITURE = */
 app.post('/register', (req, res) => {
     require("../declaration/register.jsx")(req, res)
