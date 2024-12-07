@@ -11,7 +11,7 @@ const path = require("path")
 const bodyParser = require('body-parser')
 const { limit, checkBanned } = require("../declaration/rateLimit.jsx")
 const isAuthenticated = require("../declaration/autentikasi.jsx")
-const allowedApiKeys = require("../../declaration/arrayKey.jsx")
+const allowedApiKeys = require("../declaration/arrayKey.jsx")
 
 const app = express()
 app.use(checkBanned)
